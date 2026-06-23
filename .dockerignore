@@ -1,0 +1,40 @@
+# --- Git 관련 파일 (버전 관리는 호스트에서만 하면 됩니다) ---
+.git
+.gitignore
+.gitattributes
+
+# --- VS Code 및 IDE 설정 파일 (나만의 에디터 설정은 제외) ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# --- Python 빌드 및 캐시 파일 (도커 안에서 새로 생성되므로 제외) ---
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- OS 및 시스템 임시 파일 ---
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+
+# --- Docker 관련 자체 파일 (빌드할 때 이미지 안에 또 넣을 필요 없음) ---
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# --- 문서 및 개발 일지 (코드 실행과 상관없는 파일) ---
+README.md
+*.md

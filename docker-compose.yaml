@@ -1,0 +1,54 @@
+# 실행할 컨테이너들의 목록을 시작합니다.
+# services: Starts the list of containers to be run.
+services:
+  # 서비스(컨테이너)의 이름을 'drone_dev'으로 정합니다. (사용자 지정 이름)
+  # drone_dev: Names the service 'drone_dev'. (User-defined name)
+  drone_dev:
+    
+    # 현재 폴더(.)에 있는 Dockerfile을 사용해서 이미지를 빌드합니다.
+    # Tells Docker to build the image using the Dockerfile in the current directory.
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # 빌드할 이미지 이름을 적습니다.
+    # Image name built from the Dockerfile.
+    image: hri_drone_env
+
+    # 컨테이너가 생성되었을 때의 이름을 고정합니다.
+    # container_name: Fixes the container name upon creation.
+    container_name: hri_drone_container
+    
+    # 호스트(내 컴퓨터)와 네트워크를 공유하여 통신 문제를 해결합니다.
+    # Shares host network to solve communication issues.
+    network_mode: host
+
+    # [수정] 인텔 내장 그래픽 환경을 위한 GUI(Gazebo) 설정
+    # Settings for running GUI applications on Intel iGPU & Wayland.
+    environment:
+      # 내 컴퓨터의 화면 출력 대상을 컨테이너에게 알려줍니다.
+      - DISPLAY=${DISPLAY}
+      # Qt(GUI 라이브러리)가 도커 안에서 메모리 공유 에러를 내는 것을 방지합니다.
+      - QT_X11_NO_MITSHM=1
+      # [인텔 추가] 가제보 등에서 인텔 내장 그래픽 가속을 사용하도록 설정
+      - LIBGL_ALWAYS_SOFTWARE=0
+
+    # 볼륨(공유 폴더) 설정입니다. 내 컴퓨터 폴더와 컨테이너 내부를 연결합니다.
+    # volumes: Volume settings. Links local folders with container directories.
+    volumes:
+      # 리눅스의 화면 통신 소켓(X11)을 공유하여 GUI 창을 띄웁니다.
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # 내 코드를 컨테이너 안의 /app 폴더와 동기화합니다.
+      - ./:/app
+      # USB 장치(ESP32 등) 연결을 위해 /dev 폴더를 공유합니다.
+      - /dev:/dev
+
+    # 컨테이너가 종료되지 않고 계속 켜져 있게 합니다.
+    # Keeps the container running.
+    command: tail -f /dev/null
+
+    # [수정] privileged 옵션과 그래픽 장치(/dev/dri) 접근 권한을 함께 부여합니다.
+    # Grants privileges and hardware acceleration access for Intel iGPU.
+    privileged: true
+    devices:
+      - /dev/dri:/dev/dri  # 인텔 내장 그래픽 카드의 하드웨어 가속 성능을 도커에 직접 연결합니다.
